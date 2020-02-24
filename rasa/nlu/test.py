@@ -76,23 +76,14 @@ def plot_confusion_matrix(
     Normalization can be applied by setting `normalize=True`."""
     import matplotlib.pyplot as plt
     from matplotlib.colors import LogNorm
+    import seaborn as sns
 
     zmax = cm.max()
     plt.clf()
     if not cmap:
         cmap = plt.cm.Blues
-    plt.imshow(
-        cm,
-        interpolation="nearest",
-        cmap=cmap,
-        aspect="auto",
-        norm=LogNorm(vmin=zmin, vmax=zmax),
-    )
+
     plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
 
     if normalize:
         cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
@@ -100,16 +91,8 @@ def plot_confusion_matrix(
     else:
         logger.info(f"Confusion matrix, without normalization: \n{cm}")
 
-    thresh = cm.max() / 2.0
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(
-            j,
-            i,
-            cm[i, j],
-            horizontalalignment="center",
-            color="white" if cm[i, j] > thresh else "black",
-        )
-
+    sns.heatmap(cm, annot=True, fmt='d', cmap=cmap,
+            xticklabels=classes, yticklabels=classes)
     plt.ylabel("True label")
     plt.xlabel("Predicted label")
 
